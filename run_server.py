@@ -92,10 +92,8 @@ def main():
     else:
         args_schema = (BatchTensorDescriptor.from_tensor(sample_input, compression),)
 
-    # initialize pytorch module
-    backends = {}
-    for uid in reserved_uids:
-        backends[uid] = ModuleBackend(
+    backends = {
+        uid: ModuleBackend(
             name=uid,
             module=name_to_block[args.module_cls](),
             args_schema=args_schema,
@@ -104,7 +102,8 @@ def main():
             min_batch_size=args.min_batch_size,
             max_batch_size=args.max_batch_size,
         )
-
+        for uid in reserved_uids
+    }
     server = Server(
         dht,
         backends,

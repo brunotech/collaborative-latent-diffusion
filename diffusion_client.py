@@ -39,7 +39,7 @@ class DiffusionClient:
         **kwargs
     ):
         dht = hivemind.DHT(initial_peers, client_mode=True, start=True, **kwargs)
-        self.expert = BalancedRemoteExpert(dht=dht, uid_prefix=dht_prefix + ".")
+        self.expert = BalancedRemoteExpert(dht=dht, uid_prefix=f"{dht_prefix}.")
 
     def draw(self, prompts: List[str], *, skip_decoding: bool = False) -> List[GeneratedImage]:
         encoded_prompts = []
@@ -116,7 +116,9 @@ class BalancedRemoteExpert(nn.Module):
         forward_inputs = (args, kwargs)
 
         if not nested_compare(forward_inputs, self.info["forward_schema"]):
-            raise TypeError(f"Inputs do not match expert input schema. Did you pass the right number of parameters?")
+            raise TypeError(
+                "Inputs do not match expert input schema. Did you pass the right number of parameters?"
+            )
 
         flat_inputs = list(nested_flatten(forward_inputs))
         forward_task_size = flat_inputs[0].shape[0]

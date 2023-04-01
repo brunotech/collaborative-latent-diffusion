@@ -55,10 +55,10 @@ def load_safety_model(clip_model):
 
     cache_folder = f"{MODEL_PATH}/clip_retrieval/" + clip_model.replace("/", "_")
     if clip_model == "ViT-L/14":
-        model_dir = cache_folder + "/clip_autokeras_binary_nsfw"
+        model_dir = f"{cache_folder}/clip_autokeras_binary_nsfw"
         dim = 768
     elif clip_model == "ViT-B/32":
-        model_dir = cache_folder + "/clip_autokeras_nsfw_b32"
+        model_dir = f"{cache_folder}/clip_autokeras_nsfw_b32"
         dim = 512
     else:
         raise ValueError("Unknown clip model")
@@ -66,7 +66,7 @@ def load_safety_model(clip_model):
     if not os.path.exists(model_dir):
         os.makedirs(cache_folder, exist_ok=True)
 
-        path_to_zip_file = cache_folder + "/clip_autokeras_binary_nsfw.zip"
+        path_to_zip_file = f"{cache_folder}/clip_autokeras_binary_nsfw.zip"
         if clip_model == "ViT-L/14":
             url_model = "https://raw.githubusercontent.com/LAION-AI/CLIP-based-NSFW-Detector/main/clip_autokeras_binary_nsfw.zip"
         elif clip_model == "ViT-B/32":
@@ -74,7 +74,7 @@ def load_safety_model(clip_model):
                 "https://raw.githubusercontent.com/LAION-AI/CLIP-based-NSFW-Detector/main/clip_autokeras_nsfw_b32.zip"
             )
         else:
-            raise ValueError("Unknown model {}".format(clip_model))
+            raise ValueError(f"Unknown model {clip_model}")
         urlretrieve(url_model, path_to_zip_file)
 
         with zipfile.ZipFile(path_to_zip_file, "r") as zip_ref:
@@ -90,7 +90,7 @@ def is_unsafe(safety_model, embeddings, threshold=0.5):
     """find unsafe embeddings"""
     nsfw_values = safety_model.predict(embeddings, batch_size=embeddings.shape[0])
     x = np.array([e[0] for e in nsfw_values])
-    return True if x > threshold else False
+    return x > threshold
 
 
 def load_model_from_config(config, ckpt, verbose=False):
